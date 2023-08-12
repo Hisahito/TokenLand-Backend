@@ -1,18 +1,34 @@
-const mysql = require('mysql2');
+const db = require('../database/conection.db');
 
-const db = mysql.createPool({
-    host: 'localhost',
-    user: 'username',
-    password: 'password',
-    database: 'token_land'
-});
 
-// Proteger contra inyecciones SQL utilizando consultas preparadas
-exports.createUser = (username, password, email, phoneNumber) => {
-    return db.promise().execute(
-        'INSERT INTO users (username, password, email, phone_number) VALUES (?, ?, ?, ?)',
-        [username, password, email, phoneNumber]
-    );
-};
+class User {
+    static handleDBError(error) {
+        if (error.code === 'PROTOCOL_CONNECTION_LOST') {
+            console.error('La conexión de la base de datos se cerró.');
+        }
+        if (error.code === 'ER_CON_COUNT_ERROR') {
+            console.error('La base de datos tiene demasiadas conexiones.');
+        }
+        if (error.code === 'ECONNREFUSED') {
+            console.error('La conexión de la base de datos fue rechazada.');
+        }
+    }
 
-// Otras funciones relacionadas con usuarios irían aquí
+    // Proteger contra inyecciones SQL utilizando consultas preparadas
+    static createUser = (username, password, email, phone_number) => {
+       return new Promise((resolve, reject) => {
+        const query = 'INSERT INTO users (username, password, email, phone_number) VALUES (?, ?, ?, ?)';
+        db.query(query, [username, password, email, phone_number], (error, result) => {
+            if (error) {
+                this.handleDBError(error);
+                reject(error);
+            }
+            resolve(result);
+        }
+        );
+         });
+    }
+
+}
+
+module.exports = User;

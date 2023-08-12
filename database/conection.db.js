@@ -1,6 +1,6 @@
 require('dotenv').config();
 const mysql = require('mysql2');
-const config = require("../config/index");
+const config = require("../config/index.config");
 
 // Configuración del pool de conexiones a la base de datos
 const db = mysql.createPool({

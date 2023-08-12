@@ -8,6 +8,8 @@ exports.registerUser = async (req, res) => {
         // Aquí debes hashificar la contraseña antes de guardarla
         // Por ejemplo, usando bcrypt
 
+
+
         // Crear usuario
         const [result] = await User.createUser(username, password, email, phone_number);
 
